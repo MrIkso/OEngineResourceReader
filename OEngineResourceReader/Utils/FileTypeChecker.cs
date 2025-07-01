@@ -37,6 +37,14 @@ namespace OEngineResourceReader.Utils
 
         public bool ValidateHeaderOEngine(string filePath)
         {
+            // handle old version fonts
+            string fileName = Path.GetFileName(filePath);
+            if (fileName.EndsWith(".fnt.Font.gen"))
+            {
+                Type = FileType.Font;
+                return true;
+            }
+
             using BinaryReader reader = new BinaryReader(File.OpenRead(filePath));
 
             Debug.WriteLine("Validating file header...");
@@ -54,7 +62,7 @@ namespace OEngineResourceReader.Utils
                 Type = FileType.Font;
                 return true;
             }
-
+            
             reader.BaseStream.Seek(0x8, SeekOrigin.Begin); // Skip to the serializer section
             string cookedVal = FileReader.ReadLengthPrefixedString(reader);
             if (cookedVal.Equals("Cooked")){
