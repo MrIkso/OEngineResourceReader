@@ -4,6 +4,7 @@ namespace OEngineResourceReader.Utils
 {
     public class ResourceNameDecryptor
     {
+        // this keys from Ravenswatch.v1.02.02.00
         private static readonly byte[] UppercaseMap = "HBYVJSLMKUGREDOQTWCPNFAIZX"u8.ToArray();
         private static readonly byte[] LowercaseMap = "bcjizqaftpvlkhwxeoydrsumgn"u8.ToArray();
 

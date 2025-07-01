@@ -45,6 +45,9 @@
             generateNewFontFromBMFontToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator3 = new ToolStripSeparator();
             exitToolStripMenuItem = new ToolStripMenuItem();
+            toolsToolStripMenuItem = new ToolStripMenuItem();
+            decryptToolStripMenuItem = new ToolStripMenuItem();
+            enableDecryptionToTreeVisualToolStripMenuItem = new ToolStripMenuItem();
             aboutToolStripMenuItem = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
             aboutProgramToolStripMenuItem = new ToolStripMenuItem();
@@ -85,8 +88,6 @@
             fileTreeView = new TreeView();
             extFilterTextBox = new TextBox();
             applyFilterButton = new Button();
-            toolsToolStripMenuItem = new ToolStripMenuItem();
-            decryptToolStripMenuItem = new ToolStripMenuItem();
             menuStrip.SuspendLayout();
             textureTableLayoutPanel.SuspendLayout();
             mainTabControl.SuspendLayout();
@@ -227,6 +228,28 @@
             exitToolStripMenuItem.Size = new Size(336, 26);
             exitToolStripMenuItem.Text = "Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
+            // toolsToolStripMenuItem
+            // 
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { decryptToolStripMenuItem, enableDecryptionToTreeVisualToolStripMenuItem });
+            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            toolsToolStripMenuItem.Size = new Size(58, 24);
+            toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // decryptToolStripMenuItem
+            // 
+            decryptToolStripMenuItem.Name = "decryptToolStripMenuItem";
+            decryptToolStripMenuItem.Size = new Size(388, 26);
+            decryptToolStripMenuItem.Text = "Decrypt paths in UsedRscList.ot";
+            decryptToolStripMenuItem.Click += decryptToolStripMenuItem_Click;
+            // 
+            // enableDecryptionToTreeVisualToolStripMenuItem
+            // 
+            enableDecryptionToTreeVisualToolStripMenuItem.CheckOnClick = true;
+            enableDecryptionToTreeVisualToolStripMenuItem.Name = "enableDecryptionToTreeVisualToolStripMenuItem";
+            enableDecryptionToTreeVisualToolStripMenuItem.Size = new Size(392, 26);
+            enableDecryptionToTreeVisualToolStripMenuItem.Text = "Enable File Names Decryption in Tree (Visual)";
+            enableDecryptionToTreeVisualToolStripMenuItem.CheckStateChanged += enableDecryptionToTreeVisualToolStripMenuItem_CheckStateChanged;
             // 
             // aboutToolStripMenuItem
             // 
@@ -732,6 +755,7 @@
             fileTreeView.HideSelection = false;
             fileTreeView.Location = new Point(3, 3);
             fileTreeView.Name = "fileTreeView";
+            fileTreeView.ShowNodeToolTips = true;
             fileTreeView.Size = new Size(213, 477);
             fileTreeView.TabIndex = 0;
             fileTreeView.BeforeExpand += fileTreeView_BeforeExpand;
@@ -761,20 +785,6 @@
             applyFilterButton.Text = "Apply";
             applyFilterButton.UseVisualStyleBackColor = true;
             applyFilterButton.Click += applyFilterButton_Click;
-            // 
-            // toolsToolStripMenuItem
-            // 
-            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { decryptToolStripMenuItem });
-            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            toolsToolStripMenuItem.Size = new Size(58, 24);
-            toolsToolStripMenuItem.Text = "Tools";
-            // 
-            // decryptToolStripMenuItem
-            // 
-            decryptToolStripMenuItem.Name = "decryptToolStripMenuItem";
-            decryptToolStripMenuItem.Size = new Size(298, 26);
-            decryptToolStripMenuItem.Text = "Decrypt paths in UsedRscList.ot";
-            decryptToolStripMenuItem.Click += decryptToolStripMenuItem_Click;
             // 
             // MainForm
             // 
@@ -889,5 +899,6 @@
         private Button applyFilterButton;
         private ToolStripMenuItem toolsToolStripMenuItem;
         private ToolStripMenuItem decryptToolStripMenuItem;
+        private ToolStripMenuItem enableDecryptionToTreeVisualToolStripMenuItem;
     }
 }

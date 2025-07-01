@@ -38,7 +38,7 @@ namespace OEngineResourceReader.Forms
         private bool _isDoubleClick = false;
         private bool _isTranslationChanged = false;
         private bool _isOldFontFile = false;
-
+        private bool _isApplyDecryptionToFileTree = false;
         private Bitmap? _fontBitmap;
 
         public MainForm()
@@ -709,7 +709,12 @@ namespace OEngineResourceReader.Forms
                 case FileTypeChecker.FileType.Shader:
                 case FileTypeChecker.FileType.SettingsVfx:
                 case FileTypeChecker.FileType.SettingsGlobalEntityValue:
-
+                case FileTypeChecker.FileType.Enemies:
+                case FileTypeChecker.FileType.DreamShards:
+                case FileTypeChecker.FileType.AchievementDefinition:
+                case FileTypeChecker.FileType.Challenges:
+                case FileTypeChecker.FileType.EntitySettingsResource:
+                case FileTypeChecker.FileType.Cooked:
                     //case FileTypeChecker.FileType.Unknown:
                     MessageBox.Show("The selected file is not supported.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -819,7 +824,7 @@ namespace OEngineResourceReader.Forms
                 _isTreeViewLoading = true;
                 this.Cursor = Cursors.WaitCursor;
 
-                 nodeToExpand.Nodes.Clear();
+                nodeToExpand.Nodes.Clear();
                 await PopulateNodeAsync(nodeToExpand);
 
                 this.BeginInvoke(new Action(() =>
@@ -898,7 +903,7 @@ namespace OEngineResourceReader.Forms
             }
         }
 
-       
+
         private async Task PopulateNodeAsync(TreeNode node)
         {
             var path = node.Tag as string;
@@ -922,14 +927,38 @@ namespace OEngineResourceReader.Forms
             {
                 foreach (var dir in items.Value.Directories)
                 {
-                    var dirNode = new TreeNode(Path.GetFileName(dir)) { Tag = dir };
+                    string originalName = Path.GetFileName(dir);
+                    var dirNode = new TreeNode(originalName) { Tag = dir };
+
+                    if (_isApplyDecryptionToFileTree)
+                    {
+                        string decryptedName = ResourceNameDecryptor.Decrypt(originalName);
+                        if (!originalName.Equals(decryptedName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            dirNode.Text = $"{decryptedName} ({originalName})";
+                            dirNode.ToolTipText = $"Decrypted: {decryptedName}\nOriginal: {originalName}";
+                        }
+                    }
+                    
                     dirNode.Nodes.Add(new TreeNode(DummyNodeText));
                     node.Nodes.Add(dirNode);
                 }
 
                 foreach (var file in items.Value.Files)
                 {
-                    var fileNode = new TreeNode(Path.GetFileName(file)) { Tag = file };
+                    string originalName = Path.GetFileName(file);
+                    var fileNode = new TreeNode(originalName) { Tag = file };
+
+                    if (_isApplyDecryptionToFileTree)
+                    {
+                        string decryptedName = ResourceNameDecryptor.Decrypt(originalName);
+                        if (!originalName.Equals(decryptedName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            fileNode.Text = $"{decryptedName} ({originalName})";
+                            fileNode.ToolTipText = $"Decrypted: {decryptedName}\nOriginal: {originalName}";
+                        }
+                    }
+
                     node.Nodes.Add(fileNode);
                 }
             }
@@ -1491,5 +1520,16 @@ namespace OEngineResourceReader.Forms
             }
         }
         #endregion
+
+        private void enableDecryptionToTreeVisualToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+            _isApplyDecryptionToFileTree = !_isApplyDecryptionToFileTree;
+            enableDecryptionToTreeVisualToolStripMenuItem.Checked = _isApplyDecryptionToFileTree;
+
+            if (!string.IsNullOrEmpty(_currentRootPath))
+            {
+                LoadTreeViewFromDirectory(_currentRootPath);
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net;
 using System.Text;
 
 namespace OEngineResourceReader.Utils
@@ -18,6 +19,12 @@ namespace OEngineResourceReader.Utils
             SettingsVfx = 9, // oCSheduledVfcSettings
             SettingsGlobalEntityValue = 10, // oCGlobalEntityValueSettings
             Font = 11,
+            Enemies = 12, // oCDtEnemyDefinition
+            DreamShards = 13, // oCDtDreamShardDefinition
+            Challenges = 14,
+            AchievementDefinition = 15, //AchievementDefinition
+            EntitySettingsResource = 16, // oCEntitySettingsResource
+            Cooked = 17,
             Unknown
         }
 
@@ -47,6 +54,13 @@ namespace OEngineResourceReader.Utils
                 Type = FileType.Font;
                 return true;
             }
+
+            reader.BaseStream.Seek(0x8, SeekOrigin.Begin); // Skip to the serializer section
+            string cookedVal = FileReader.ReadLengthPrefixedString(reader);
+            if (cookedVal.Equals("Cooked")){
+                Type = FileType.Cooked;
+                return true;
+            }
             reader.BaseStream.Seek(0x0, SeekOrigin.Begin);
 
             // Read only the first 0x30 bytes
@@ -63,7 +77,7 @@ namespace OEngineResourceReader.Utils
             }
 
             memoryStream.Seek(0x10, SeekOrigin.Begin); // Skip to the serializer section
-            string serializer = FindFileTypeSerialiser(headerReader);
+            string serializer = FileReader.ReadLengthPrefixedString(headerReader);
             Debug.WriteLine($"File type serializer: {serializer}");
             // Determine file type based on serializer string
             Type = serializer switch
@@ -77,9 +91,14 @@ namespace OEngineResourceReader.Utils
                 "oCGoComponent" => FileType.Geometry,
                 "oCGameObject" => FileType.Object,
                 "oCShader2Reflection" => FileType.Shader,
-                "oCSheduledVfcSettings" => FileType.SettingsVfx,
+                "oCScheduledVfxSettings" => FileType.SettingsVfx,
                 "oCGlobalEntityValueSettings" => FileType.SettingsGlobalEntityValue,
-
+                "oCDtEnemyDefinition" => FileType.Enemies,
+                "oCDtDreamShardDefinition" => FileType.DreamShards,
+                "ChallengeDefinition" => FileType.Challenges,
+                "AchievementDefinition" => FileType.AchievementDefinition,
+                "oCEntitySettingsResource" => FileType.EntitySettingsResource,
+               
                 _ => FileType.Unknown
             };
 
@@ -88,12 +107,5 @@ namespace OEngineResourceReader.Utils
             return Type != FileType.Unknown;
         }
 
-        public static string FindFileTypeSerialiser(BinaryReader reader)
-        {
-            int length = reader.ReadInt32();
-            byte[] bytes = reader.ReadBytes(length);
-            string foundString = Encoding.UTF8.GetString(bytes);
-            return foundString;
-        }
     }
 }
