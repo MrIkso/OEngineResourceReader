@@ -453,9 +453,11 @@
             textDataGridView.RowHeadersWidth = 51;
             textDataGridView.Size = new Size(639, 425);
             textDataGridView.TabIndex = 0;
+            textDataGridView.CellMouseDown += textDataGridView_CellMouseDown;
             textDataGridView.CellValueChanged += textDataGridView_CellValueChanged;
             textDataGridView.DragDrop += MainForm_DragDrop;
             textDataGridView.DragEnter += MainForm_DragEnter;
+            textDataGridView.KeyDown += textDataGridView_KeyDown;
             // 
             // textInfoLabel
             // 
@@ -472,9 +474,9 @@
             // 
             saveTextButton.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             saveTextButton.Enabled = false;
-            saveTextButton.Location = new Point(561, 3);
+            saveTextButton.Location = new Point(548, 3);
             saveTextButton.Name = "saveTextButton";
-            saveTextButton.Size = new Size(81, 29);
+            saveTextButton.Size = new Size(94, 29);
             saveTextButton.TabIndex = 1;
             saveTextButton.Text = "Save";
             saveTextButton.UseVisualStyleBackColor = true;
@@ -482,7 +484,7 @@
             // 
             // exportTextDataButton
             // 
-            exportTextDataButton.Location = new Point(485, 3);
+            exportTextDataButton.Location = new Point(472, 3);
             exportTextDataButton.Name = "exportTextDataButton";
             exportTextDataButton.Size = new Size(70, 29);
             exportTextDataButton.TabIndex = 3;
@@ -492,7 +494,7 @@
             // 
             // importTextDataButton
             // 
-            importTextDataButton.Location = new Point(409, 3);
+            importTextDataButton.Location = new Point(396, 3);
             importTextDataButton.Name = "importTextDataButton";
             importTextDataButton.Size = new Size(70, 29);
             importTextDataButton.TabIndex = 4;
@@ -503,12 +505,13 @@
             // searchTextTextBox
             // 
             searchTextTextBox.Dock = DockStyle.Fill;
-            searchTextTextBox.Location = new Point(76, 3);
+            searchTextTextBox.Location = new Point(74, 3);
             searchTextTextBox.Name = "searchTextTextBox";
             searchTextTextBox.PlaceholderText = "Enter text to filter";
-            searchTextTextBox.Size = new Size(327, 27);
+            searchTextTextBox.Size = new Size(316, 27);
             searchTextTextBox.TabIndex = 6;
             searchTextTextBox.TextChanged += searchTextTextBox_TextChanged;
+            searchTextTextBox.KeyDown += searchTextTextBox_KeyDown;
             // 
             // gotoLineTextTextBox
             // 
@@ -516,9 +519,10 @@
             gotoLineTextTextBox.Location = new Point(3, 3);
             gotoLineTextTextBox.Name = "gotoLineTextTextBox";
             gotoLineTextTextBox.PlaceholderText = "Goto line";
-            gotoLineTextTextBox.Size = new Size(67, 27);
+            gotoLineTextTextBox.Size = new Size(65, 27);
             gotoLineTextTextBox.TabIndex = 7;
             gotoLineTextTextBox.TextChanged += gotoLineTextTextBox_TextChanged;
+            gotoLineTextTextBox.KeyDown += gotoLineTextTextBox_KeyDown;
             // 
             // fontTabPage
             // 

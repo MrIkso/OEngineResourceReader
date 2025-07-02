@@ -3,10 +3,13 @@ using OEngineResourceReader.FontParser;
 using OEngineResourceReader.Language;
 using OEngineResourceReader.Texture;
 using OEngineResourceReader.Utils;
+using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Windows.Forms;
 using static OEngineResourceReader.Texture.TextureProcessor;
 using Timer = System.Windows.Forms.Timer;
 
@@ -107,6 +110,11 @@ namespace OEngineResourceReader.Forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (CheckIfTranslationChanged())
+            {
+                return;
+            }
+
             _textureProcessor = null;
             _textureInfo = null;
             preivewTextureBox.Bitmap?.Dispose();
@@ -508,6 +516,9 @@ namespace OEngineResourceReader.Forms
                 if (result.Success && result.Data != null && result.Data.Count > 0)
                 {
                     this.textFilePath = filePath;
+                    searchTextTextBox.Text = string.Empty;
+                    gotoLineTextTextBox.Text = string.Empty;
+
                     UpdateTitle(textFilePath);
                     textDataGridView.SuspendLayout();
 
@@ -790,19 +801,34 @@ namespace OEngineResourceReader.Forms
             filterTimer.Stop();
             filterTimer.Start();
         }
+
         private void searchTextTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(searchTextTextBox.Text))
-            {
-                string searchText = searchTextTextBox.Text.ToLower();
+            string searchText = searchTextTextBox.Text;
+            PerformTextTableFilter(searchText);
+        }
 
+        private void searchTextTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                string searchText = searchTextTextBox.Text;
+                PerformTextTableFilter(searchText);
+            }
+        }
+
+        private void PerformTextTableFilter(string searchText)
+        {
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                searchText = searchText.ToLower();
                 foreach (DataGridViewRow row in textDataGridView.Rows)
                 {
                     bool matchesOriginal = row.Cells["Value"].Value != null &&
-                                           row.Cells["Value"].Value.ToString()!.ToLower().Contains(searchText);
+                        row.Cells["Value"].Value.ToString()!.ToLower().Contains(searchText);
 
                     bool matchesTranslation = row.Cells["Translation"].Value != null &&
-                                              row.Cells["Translation"].Value.ToString()!.ToLower().Contains(searchText);
+                        row.Cells["Translation"].Value.ToString()!.ToLower().Contains(searchText);
 
                     row.Visible = matchesOriginal || matchesTranslation;
                 }
@@ -909,7 +935,6 @@ namespace OEngineResourceReader.Forms
                 }
             }
         }
-
 
         private async Task PopulateNodeAsync(TreeNode node)
         {
@@ -1544,6 +1569,19 @@ namespace OEngineResourceReader.Forms
 
         private void gotoLineTextTextBox_TextChanged(object sender, EventArgs e)
         {
+            GoToRowPerform();
+        }
+
+        private void gotoLineTextTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                GoToRowPerform();
+            }
+        }
+
+        private void GoToRowPerform()
+        {
             string inputText = gotoLineTextTextBox.Text;
             if (string.IsNullOrEmpty(inputText))
             {
@@ -1554,7 +1592,6 @@ namespace OEngineResourceReader.Forms
             {
                 GoToRow(lineNumber);
             }
-            
         }
 
         private void GoToRow(int lineNumber)
@@ -1577,6 +1614,57 @@ namespace OEngineResourceReader.Forms
                 {
                     return;
                 }
+            }
+        }
+
+        private void textDataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex != -1 && e.ColumnIndex != -1)
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    DataGridViewCell clickedCell = (sender as DataGridView)[e.ColumnIndex, e.RowIndex];
+
+                    this.textDataGridView.CurrentCell = clickedCell;
+                    string? myData = textDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+
+                    ContextMenuStrip contextMenu = new ContextMenuStrip();
+                    contextMenu.Items.Add("Copy Value", null, (s, args) =>
+                    {
+                        if (!string.IsNullOrEmpty(myData))
+                        {
+                            Clipboard.SetText(myData);
+                        }
+                    });
+
+                    ToolStripMenuItem pasteMenuItem = new ToolStripMenuItem("Paste");
+                    pasteMenuItem.Enabled = e.ColumnIndex == textDataGridView.Columns["Translation"].Index && Clipboard.ContainsText();
+                    pasteMenuItem.Click += (s, args) =>
+                    {
+                        PasteDataToTrasnlationCell();
+                    };
+                    contextMenu.Items.Add(pasteMenuItem);
+
+                    var relativeMousePosition = textDataGridView.PointToClient(Cursor.Position);
+                    contextMenu.Show(textDataGridView, relativeMousePosition);
+                }
+            }
+        }
+
+        private void textDataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.V && e.Control)
+            {
+                PasteDataToTrasnlationCell();
+            }
+        }
+
+        private void PasteDataToTrasnlationCell()
+        {
+            var currentCell = textDataGridView.CurrentCell;
+            if (currentCell.ColumnIndex == textDataGridView.Columns["Translation"].Index && Clipboard.ContainsText())
+            {
+                textDataGridView.Rows[currentCell.RowIndex].Cells[currentCell.ColumnIndex].Value = Clipboard.GetText();
             }
         }
     }
