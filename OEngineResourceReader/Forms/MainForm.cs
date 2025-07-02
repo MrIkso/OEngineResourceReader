@@ -517,11 +517,18 @@ namespace OEngineResourceReader.Forms
                     textDataGridView.AllowUserToAddRows = false;
                     textDataGridView.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
                     textDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-
                     var keyColumn = new DataGridViewTextBoxColumn
                     {
                         Name = "Key",
                         HeaderText = "Key",
+                        ReadOnly = true,
+                        Visible = false,
+                        AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
+                    };
+                    var lineNumColumn = new DataGridViewTextBoxColumn
+                    {
+                        Name = "LineNum",
+                        HeaderText = "Line",
                         ReadOnly = true,
                         AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
                     };
@@ -539,13 +546,13 @@ namespace OEngineResourceReader.Forms
                         AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
                     };
 
-                    textDataGridView.Columns.AddRange([keyColumn, valueColumn, translationColumn]);
+                    textDataGridView.Columns.AddRange([keyColumn, lineNumColumn, valueColumn, translationColumn]);
 
                     var rowsToAdd = new List<DataGridViewRow>();
                     foreach (var item in result.Data)
                     {
                         var row = new DataGridViewRow();
-                        row.CreateCells(textDataGridView, item.Key, item.Value, "");
+                        row.CreateCells(textDataGridView, item.Key, item.Key + 1, item.Value, "");
                         rowsToAdd.Add(row);
                     }
                     textDataGridView.Rows.AddRange(rowsToAdd.ToArray());
@@ -939,7 +946,7 @@ namespace OEngineResourceReader.Forms
                             dirNode.ToolTipText = $"Decrypted: {decryptedName}\nOriginal: {originalName}";
                         }
                     }
-                    
+
                     dirNode.Nodes.Add(new TreeNode(DummyNodeText));
                     node.Nodes.Add(dirNode);
                 }
@@ -1099,7 +1106,7 @@ namespace OEngineResourceReader.Forms
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
                 saveFileDialog.InitialDirectory = Path.GetDirectoryName(textFilePath) ?? Environment.CurrentDirectory;
-                saveFileDialog.FileName = Path.GetFileNameWithoutExtension(textFilePath) + "_exported.json";
+                saveFileDialog.FileName = Path.GetFileName(textFilePath) + "_exported.json";
                 saveFileDialog.Filter = "JSON Files|*.json";
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -1463,9 +1470,12 @@ namespace OEngineResourceReader.Forms
 
         private void extFilterTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            if (extFilterTextBox.Focused)
             {
-                applyFilterButton.PerformClick();
+                if (e.KeyCode == Keys.Enter)
+                {
+                    applyFilterButton.PerformClick();
+                }
             }
         }
 
@@ -1529,6 +1539,44 @@ namespace OEngineResourceReader.Forms
             if (!string.IsNullOrEmpty(_currentRootPath))
             {
                 LoadTreeViewFromDirectory(_currentRootPath);
+            }
+        }
+
+        private void gotoLineTextTextBox_TextChanged(object sender, EventArgs e)
+        {
+            string inputText = gotoLineTextTextBox.Text;
+            if (string.IsNullOrEmpty(inputText))
+            {
+                GoToRow(1);
+                return;
+            }
+            else if (int.TryParse(inputText, out int lineNumber) && lineNumber > 0)
+            {
+                GoToRow(lineNumber);
+            }
+            
+        }
+
+        private void GoToRow(int lineNumber)
+        {
+            if (lineNumber > 0)
+            {
+                var insibleRows = textDataGridView.Rows.Cast<DataGridViewRow>().Where(row => !row.Visible);
+                foreach (DataGridViewRow row in insibleRows)
+                {
+                    row.Visible = true;
+                }
+
+                if (lineNumber <= textDataGridView.Rows.Count)
+                {
+                    textDataGridView.ClearSelection();
+                    textDataGridView.Rows[lineNumber - 1].Selected = true;
+                    textDataGridView.FirstDisplayedScrollingRowIndex = lineNumber - 1;
+                }
+                else
+                {
+                    return;
+                }
             }
         }
     }

@@ -68,11 +68,13 @@
             exportTextDataButton = new Button();
             importTextDataButton = new Button();
             searchTextTextBox = new TextBox();
+            gotoLineTextTextBox = new TextBox();
             fontTabPage = new TabPage();
             fontMainSplitContainer = new SplitContainer();
             fontPreviewSplitContainer = new SplitContainer();
             fontTexturePreview = new ImageView.PictureBox();
             fontRenderGb = new GroupBox();
+            fontPreviewPanel = new Panel();
             fontPreviewTextPb = new PictureBox();
             previewFontTextBox = new TextBox();
             fontInfoTablePanel = new TableLayoutPanel();
@@ -105,6 +107,7 @@
             fontPreviewSplitContainer.Panel2.SuspendLayout();
             fontPreviewSplitContainer.SuspendLayout();
             fontRenderGb.SuspendLayout();
+            fontPreviewPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)fontPreviewTextPb).BeginInit();
             fontInfoTablePanel.SuspendLayout();
             fontInfoGb.SuspendLayout();
@@ -239,7 +242,7 @@
             // decryptToolStripMenuItem
             // 
             decryptToolStripMenuItem.Name = "decryptToolStripMenuItem";
-            decryptToolStripMenuItem.Size = new Size(388, 26);
+            decryptToolStripMenuItem.Size = new Size(392, 26);
             decryptToolStripMenuItem.Text = "Decrypt paths in UsedRscList.ot";
             decryptToolStripMenuItem.Click += decryptToolStripMenuItem_Click;
             // 
@@ -413,23 +416,24 @@
             // textTableLayoutPanel
             // 
             textTableLayoutPanel.ColumnCount = 5;
+            textTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18.0327873F));
+            textTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 81.96722F));
             textTableLayoutPanel.ColumnStyles.Add(new ColumnStyle());
-            textTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             textTableLayoutPanel.ColumnStyles.Add(new ColumnStyle());
             textTableLayoutPanel.ColumnStyles.Add(new ColumnStyle());
-            textTableLayoutPanel.ColumnStyles.Add(new ColumnStyle());
-            textTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
-            textTableLayoutPanel.Controls.Add(textDataGridView, 0, 1);
-            textTableLayoutPanel.Controls.Add(textInfoLabel, 0, 0);
+            textTableLayoutPanel.Controls.Add(textDataGridView, 0, 2);
+            textTableLayoutPanel.Controls.Add(textInfoLabel, 0, 1);
             textTableLayoutPanel.Controls.Add(saveTextButton, 4, 0);
             textTableLayoutPanel.Controls.Add(exportTextDataButton, 3, 0);
             textTableLayoutPanel.Controls.Add(importTextDataButton, 2, 0);
             textTableLayoutPanel.Controls.Add(searchTextTextBox, 1, 0);
+            textTableLayoutPanel.Controls.Add(gotoLineTextTextBox, 0, 0);
             textTableLayoutPanel.Dock = DockStyle.Fill;
             textTableLayoutPanel.Enabled = false;
             textTableLayoutPanel.Location = new Point(3, 3);
             textTableLayoutPanel.Name = "textTableLayoutPanel";
-            textTableLayoutPanel.RowCount = 2;
+            textTableLayoutPanel.RowCount = 3;
+            textTableLayoutPanel.RowStyles.Add(new RowStyle());
             textTableLayoutPanel.RowStyles.Add(new RowStyle());
             textTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             textTableLayoutPanel.Size = new Size(645, 486);
@@ -444,10 +448,10 @@
             textTableLayoutPanel.SetColumnSpan(textDataGridView, 5);
             textDataGridView.Dock = DockStyle.Fill;
             textDataGridView.GridColor = SystemColors.Control;
-            textDataGridView.Location = new Point(3, 38);
+            textDataGridView.Location = new Point(3, 58);
             textDataGridView.Name = "textDataGridView";
             textDataGridView.RowHeadersWidth = 51;
-            textDataGridView.Size = new Size(639, 445);
+            textDataGridView.Size = new Size(639, 425);
             textDataGridView.TabIndex = 0;
             textDataGridView.CellValueChanged += textDataGridView_CellValueChanged;
             textDataGridView.DragDrop += MainForm_DragDrop;
@@ -457,9 +461,10 @@
             // 
             textInfoLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             textInfoLabel.AutoSize = true;
-            textInfoLabel.Location = new Point(3, 7);
+            textTableLayoutPanel.SetColumnSpan(textInfoLabel, 5);
+            textInfoLabel.Location = new Point(3, 35);
             textInfoLabel.Name = "textInfoLabel";
-            textInfoLabel.Size = new Size(119, 20);
+            textInfoLabel.Size = new Size(639, 20);
             textInfoLabel.TabIndex = 2;
             textInfoLabel.Text = "Text Not Loaded";
             // 
@@ -467,9 +472,9 @@
             // 
             saveTextButton.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             saveTextButton.Enabled = false;
-            saveTextButton.Location = new Point(570, 3);
+            saveTextButton.Location = new Point(561, 3);
             saveTextButton.Name = "saveTextButton";
-            saveTextButton.Size = new Size(72, 29);
+            saveTextButton.Size = new Size(81, 29);
             saveTextButton.TabIndex = 1;
             saveTextButton.Text = "Save";
             saveTextButton.UseVisualStyleBackColor = true;
@@ -477,7 +482,7 @@
             // 
             // exportTextDataButton
             // 
-            exportTextDataButton.Location = new Point(494, 3);
+            exportTextDataButton.Location = new Point(485, 3);
             exportTextDataButton.Name = "exportTextDataButton";
             exportTextDataButton.Size = new Size(70, 29);
             exportTextDataButton.TabIndex = 3;
@@ -487,7 +492,7 @@
             // 
             // importTextDataButton
             // 
-            importTextDataButton.Location = new Point(418, 3);
+            importTextDataButton.Location = new Point(409, 3);
             importTextDataButton.Name = "importTextDataButton";
             importTextDataButton.Size = new Size(70, 29);
             importTextDataButton.TabIndex = 4;
@@ -498,12 +503,22 @@
             // searchTextTextBox
             // 
             searchTextTextBox.Dock = DockStyle.Fill;
-            searchTextTextBox.Location = new Point(128, 3);
+            searchTextTextBox.Location = new Point(76, 3);
             searchTextTextBox.Name = "searchTextTextBox";
             searchTextTextBox.PlaceholderText = "Enter text to filter";
-            searchTextTextBox.Size = new Size(284, 27);
+            searchTextTextBox.Size = new Size(327, 27);
             searchTextTextBox.TabIndex = 6;
             searchTextTextBox.TextChanged += searchTextTextBox_TextChanged;
+            // 
+            // gotoLineTextTextBox
+            // 
+            gotoLineTextTextBox.Dock = DockStyle.Fill;
+            gotoLineTextTextBox.Location = new Point(3, 3);
+            gotoLineTextTextBox.Name = "gotoLineTextTextBox";
+            gotoLineTextTextBox.PlaceholderText = "Goto line";
+            gotoLineTextTextBox.Size = new Size(67, 27);
+            gotoLineTextTextBox.TabIndex = 7;
+            gotoLineTextTextBox.TextChanged += gotoLineTextTextBox_TextChanged;
             // 
             // fontTabPage
             // 
@@ -580,7 +595,7 @@
             // 
             // fontRenderGb
             // 
-            fontRenderGb.Controls.Add(fontPreviewTextPb);
+            fontRenderGb.Controls.Add(fontPreviewPanel);
             fontRenderGb.Controls.Add(previewFontTextBox);
             fontRenderGb.Dock = DockStyle.Fill;
             fontRenderGb.Location = new Point(0, 0);
@@ -591,13 +606,23 @@
             fontRenderGb.TabStop = false;
             fontRenderGb.Text = "Live Preview Text";
             // 
+            // fontPreviewPanel
+            // 
+            fontPreviewPanel.AutoScroll = true;
+            fontPreviewPanel.Controls.Add(fontPreviewTextPb);
+            fontPreviewPanel.Dock = DockStyle.Fill;
+            fontPreviewPanel.Location = new Point(3, 50);
+            fontPreviewPanel.Name = "fontPreviewPanel";
+            fontPreviewPanel.Size = new Size(435, 96);
+            fontPreviewPanel.TabIndex = 4;
+            // 
             // fontPreviewTextPb
             // 
             fontPreviewTextPb.BackColor = Color.Transparent;
-            fontPreviewTextPb.Dock = DockStyle.Fill;
-            fontPreviewTextPb.Location = new Point(3, 50);
+            fontPreviewTextPb.Location = new Point(0, 0);
             fontPreviewTextPb.Name = "fontPreviewTextPb";
             fontPreviewTextPb.Size = new Size(435, 96);
+            fontPreviewTextPb.SizeMode = PictureBoxSizeMode.AutoSize;
             fontPreviewTextPb.TabIndex = 2;
             fontPreviewTextPb.TabStop = false;
             // 
@@ -688,7 +713,7 @@
             glyphPreviewBox.Location = new Point(3, 3);
             glyphPreviewBox.Name = "glyphPreviewBox";
             glyphPreviewBox.Size = new Size(188, 99);
-            glyphPreviewBox.SizeMode = ImageView.SizeMode.Normal;
+            glyphPreviewBox.SizeMode = ImageView.SizeMode.BestFit;
             glyphPreviewBox.TabIndex = 0;
             glyphPreviewBox.TransparentBackground = null;
             glyphPreviewBox.UseBackgroundBrush = false;
@@ -824,6 +849,8 @@
             fontPreviewSplitContainer.ResumeLayout(false);
             fontRenderGb.ResumeLayout(false);
             fontRenderGb.PerformLayout();
+            fontPreviewPanel.ResumeLayout(false);
+            fontPreviewPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)fontPreviewTextPb).EndInit();
             fontInfoTablePanel.ResumeLayout(false);
             fontInfoGb.ResumeLayout(false);
@@ -900,5 +927,7 @@
         private ToolStripMenuItem toolsToolStripMenuItem;
         private ToolStripMenuItem decryptToolStripMenuItem;
         private ToolStripMenuItem enableDecryptionToTreeVisualToolStripMenuItem;
+        private Panel fontPreviewPanel;
+        private TextBox gotoLineTextTextBox;
     }
 }
