@@ -70,50 +70,59 @@ namespace OEngineResourceReader.FontParser
                 return new Bitmap(1, 1);
             }
 
-            int totalWidth = 0;
-            int maxHeight = 0;
+            List<Tuple<Glyph, PointF>> glyphPositions = new List<Tuple<Glyph, PointF>>();
+            float currentX = 0;
+
             foreach (char c in text)
             {
-                Glyph? glyph = GetGlyph(c);
-                if (glyph != null)
+                Glyph glyph = GetGlyph(c);
+                if (glyph == null)
                 {
-                    totalWidth += (int)glyph.XAdvance;
-                    if (glyph.Height > maxHeight)
-                    {
-                        maxHeight = (int)glyph.Height;
-                    }
+                    continue;
                 }
+
+                float drawX = currentX + glyph.XOffset;
+                float drawY = this.Base + glyph.YOffset;
+
+                glyphPositions.Add(new Tuple<Glyph, PointF>(glyph, new PointF(drawX, drawY)));
+
+                float advance = Math.Max(glyph.XAdvance, (glyph.Width + 0.5f) / 2);
+                currentX += advance;
             }
 
-            maxHeight = (int)Math.Max(maxHeight, this.LineHeight);
-
-            if (totalWidth == 0 || maxHeight == 0)
+            if (glyphPositions.Count == 0)
+            {
                 return new Bitmap(1, 1);
+            }
 
-            Bitmap resultBitmap = new Bitmap(totalWidth, maxHeight);
+            float minX = glyphPositions.Min(p => p.Item2.X);
+            float maxX = glyphPositions.Max(p => p.Item2.X + p.Item1.Width);
+            float minY = glyphPositions.Min(p => p.Item2.Y);
+            float maxY = glyphPositions.Max(p => p.Item2.Y + p.Item1.Height);
+
+            int totalWidth = (int)Math.Ceiling(maxX - minX);
+            int totalHeight = (int)Math.Ceiling(maxY - minY);
+
+            if (totalWidth <= 0 || totalHeight <= 0) return new Bitmap(1, 1);
+
+            Bitmap resultBitmap = new Bitmap(totalWidth, totalHeight, PixelFormat.Format32bppArgb);
             using (Graphics g = Graphics.FromImage(resultBitmap))
             {
                 g.Clear(Color.Transparent);
 
-                float currentX = 0;
-
-                foreach (char c in text)
+                foreach (var posInfo in glyphPositions)
                 {
-                    Glyph? glyphData = GetGlyph(c);
-                    if (glyphData != null)
-                    {
-                        Glyph gdata = glyphData;
-                        RectangleF sourceRect = new RectangleF(gdata.X, gdata.Y, gdata.Width, gdata.Height);
-                        RectangleF destRect = new RectangleF(
-                            currentX + gdata.XOffset,
-                            gdata.YOffset,
-                            gdata.Width,
-                            gdata.Height);
+                    Glyph glyph = posInfo.Item1;
+                    PointF position = posInfo.Item2;
 
-                        g.DrawImage(fontTexture, destRect, sourceRect, GraphicsUnit.Pixel);
+                    RectangleF sourceRect = new RectangleF(glyph.X, glyph.Y, glyph.Width, glyph.Height);
+                    RectangleF destRect = new RectangleF(
+                        position.X - minX,
+                        position.Y - minY,
+                        glyph.Width,
+                        glyph.Height);
 
-                        currentX += gdata.XAdvance;
-                    }
+                    g.DrawImage(fontTexture, destRect, sourceRect, GraphicsUnit.Pixel);
                 }
             }
 
@@ -155,7 +164,7 @@ namespace OEngineResourceReader.FontParser
 
         public char FindCharacterForGlyphIndex(int glyphIndex)
         {
-           
+
             if (LookupTable == null || glyphIndex < 0 || glyphIndex >= Glyphs.Count)
             {
                 return char.MaxValue;
