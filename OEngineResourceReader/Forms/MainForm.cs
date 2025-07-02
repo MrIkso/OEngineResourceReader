@@ -5,11 +5,9 @@ using OEngineResourceReader.Texture;
 using OEngineResourceReader.Utils;
 using System.Data;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Windows.Forms;
 using static OEngineResourceReader.Texture.TextureProcessor;
 using Timer = System.Windows.Forms.Timer;
 
@@ -1623,10 +1621,16 @@ namespace OEngineResourceReader.Forms
             {
                 if (e.Button == MouseButtons.Right)
                 {
-                    DataGridViewCell clickedCell = (sender as DataGridView)[e.ColumnIndex, e.RowIndex];
+                    var dataGridView = sender as DataGridView;
+                    if (dataGridView == null)
+                    {
+                        return;
+                    }
+
+                    DataGridViewCell clickedCell = dataGridView[e.ColumnIndex, e.RowIndex];
 
                     this.textDataGridView.CurrentCell = clickedCell;
-                    string? myData = textDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                    string? myData = textDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
 
                     ContextMenuStrip contextMenu = new ContextMenuStrip();
                     contextMenu.Items.Add("Copy Value", null, (s, args) =>
