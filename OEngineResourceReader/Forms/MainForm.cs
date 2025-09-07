@@ -1006,6 +1006,15 @@ namespace OEngineResourceReader.Forms
                     ContextMenuStrip contextMenu = new ContextMenuStrip();
                     contextMenu.Items.Add("Open in Explorer", null, (s, args) => Helpers.OpenFileInExplorer(path));
                     contextMenu.Items.Add("Copy Path", null, (s, args) => Clipboard.SetText(path));
+                    contextMenu.Items.Add("Copy Name", null, (s, args) => Clipboard.SetText(Path.GetFileName(path)));
+                    if (decryptToolStripMenuItem.Checked)
+                    {
+                        contextMenu.Items.Add("Copy Decrypted Name", null, (s, args) =>
+                        {
+                            string decryptedName = ResourceNameDecryptor.Decrypt(Path.GetFileName(path));
+                            Clipboard.SetText(decryptedName);
+                        });
+                    }
                     if (contextMenu.Items.Count > 0)
                     {
                         contextMenu.Show(fileTreeView, fileTreeView.PointToClient(Cursor.Position));
