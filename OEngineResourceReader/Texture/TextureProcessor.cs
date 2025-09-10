@@ -65,7 +65,7 @@ namespace OEngineResourceReader.Texture
                 }
                 else if (serialaiserType == 4)
                 {
-                    seekPosition = 0xA9;
+                    seekPosition = 0xA8;
 
                 }
                 else if (serialaiserType == 5)
@@ -245,7 +245,7 @@ namespace OEngineResourceReader.Texture
                     }
                     else if (serialiserType == 4)
                     {
-                        metadataOffset = 0xA9;
+                        metadataOffset = 0xA8;
                     }
                     else if (serialiserType == 5)
                     {
